@@ -11,13 +11,21 @@ const ErrorAuthDictionary  = {
   AUTH_001: 'An error ocurred while creating token: ',
   AUTH_002: 'The document number or password is incorrect',
   AUTH_003: 'An error ocurred while logout',
-  AUTH_004: 'An internal error ocurred: ',
+  AUTH_004: 'An internal error ocurred: @data',
   AUTH_005: 'An error ocurred while creating the session token on database',
+  AUTH_006: 'The session token is invalid or expired',
+  AUTH_007: 'An unexpected error ocurred while validating token',
+}
+
+const DefaultHttpError = {
+  DEF_000: 'An unexpected Http error ocurred: @data',
+  DEF_001: 'An unknown error ocurred: @data',
 }
 
 export const ErrorDictionaries = {
   validation: ErrorDictionaryValidation,
   auth: ErrorAuthDictionary,
+  default: DefaultHttpError,
 }
 
 const ErrorCodeMapValidation = {
@@ -67,12 +75,32 @@ const ErrorCodeMapAuth = {
   sessionError:{
     code: 'AUTH_005',
     type: 'auth',
+  },
+  invalidSession:{
+    code: 'AUTH_006',
+    type: 'auth',
+  },
+  errorValidatingToken:{
+    code: 'AUTH_007',
+    type: 'auth',
   }
+}
+
+const ErrorCodeMapDefault = {
+  httpException:{
+    code: 'DEF_000',
+    type: 'default',
+  },
+  unknown:{
+    code: 'DEF_001',
+    type: 'default',
+  },
 }
 
 export const ErrorCodeMap = {
   validation: ErrorCodeMapValidation,
   auth: ErrorCodeMapAuth,
+  default: ErrorCodeMapDefault,
 }
 
 export const successMessages = {

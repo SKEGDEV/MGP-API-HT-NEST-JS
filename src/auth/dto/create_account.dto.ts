@@ -1,6 +1,5 @@
 import { IsEmail, IsNotEmpty, IsString, IsInt, IsDate, MinLength, MaxLength, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ErrorDto } from 'src/common/dto/error.dto';
 
 export class SessionResponseDto{
   @IsString()
@@ -18,8 +17,6 @@ export class SessionResponseDto{
   @IsString()
   @IsOptional()
   token: string = '';
-
-  error: ErrorDto = new ErrorDto();
 }
 
 export class CreateAccountRequestDto{

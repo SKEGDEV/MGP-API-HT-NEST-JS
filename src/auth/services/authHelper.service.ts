@@ -8,6 +8,8 @@ import { JwtService } from '@nestjs/jwt';
 import { ErrorCodeMap } from 'src/common/constants';
 import { successMessages } from 'src/common/constants';
 import { EncryptionUtil } from 'src/common/utils/encryption.util';
+import { CustomHttpException } from 'src/common/exceptions/custom-http.exception';
+import { HttpStatus } from '@nestjs/common';
 
 interface JWTData{
   document_number: string;
@@ -65,10 +67,7 @@ export class AuthHelperService{
       const params = this.toolbox.jsonToSqlParams(data);
       const dbResult = await this.dbController.executeProcedure('sp_update_teacher_session', params);
       if(dbResult.length === 0){
-	return{
-	  ...response,
-	  error: this.toolbox.makeErrorResponse(500, ErrorCodeMap.auth.sessionError, '', 'Database error: Session not found')
-	}
+	throw new CustomHttpException(ErrorCodeMap.auth.sessionError, '', 'Database error: Session not found', HttpStatus.INTERNAL_SERVER_ERROR);
       }
       const encriptedPublicPassword = await this.encryptionUtil.hashPassword(data.public_password);
       const tokenPayload = {
@@ -85,12 +84,12 @@ export class AuthHelperService{
 				  successMessages.login.replace('@name', response.name);
     }catch(e){
       if(e instanceof sql.RequestError || e instanceof sql.ConnectionError){
-	return{
-	  ...response,
-	  error: this.toolbox.makeErrorResponse(500, ErrorCodeMap.auth.internalError, '', `Database error: ${e.message}`)
-	}
+	throw new CustomHttpException(ErrorCodeMap.auth.internalError, '', `Database error: ${e.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
       }
-      response.error = this.toolbox.makeErrorResponse(500, ErrorCodeMap.auth.internalError, '', `Unknown error: ${e.message}`);
+      if(e instanceof CustomHttpException){
+	throw e;
+      }
+      throw new CustomHttpException(ErrorCodeMap.auth.internalError, '', `Unknown error: ${e.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     } 
     return response;
   }

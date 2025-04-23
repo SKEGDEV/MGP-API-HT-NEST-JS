@@ -4,7 +4,7 @@ import { ErrorDictionaries } from '../constants';
 import {Injectable} from '@nestjs/common';
 
 
-interface ErrorParameter{
+export interface ErrorParameter{
   code: string;
   type: string;
 }

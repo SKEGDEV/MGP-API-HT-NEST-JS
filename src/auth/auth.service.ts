@@ -8,6 +8,8 @@ import * as sql from "mssql";
 import { AuthHelperService } from "./services/authHelper.service";
 import {ErrorCodeMap} from "../common/constants";
 import { successMessages } from "../common/constants";
+import { CustomHttpException } from "src/common/exceptions/custom-http.exception";
+import { HttpStatus } from "@nestjs/common";
 
 
 @Injectable()
@@ -24,10 +26,7 @@ export class AuthService{
     try{
       const userExists = await this.authUtilityService.userExists(new_user.document_number, new_user.document_type);
       if(userExists){ 
-	return{
-	  ...response,
-	  error : this.toolbox.makeErrorResponse(409, ErrorCodeMap.auth.duplicated, new_user.document_number, 'User duplicated')
-	}
+	throw new CustomHttpException(ErrorCodeMap.auth.duplicated, new_user.document_number, 'User duplicated', HttpStatus.CONFLICT);
       } 
       const userEntity = {
 	...new_user,
@@ -46,12 +45,12 @@ export class AuthService{
       response = await this.authUtilityService.createJWT(data);
     }catch(e){
       if(e instanceof sql.RequestError || e instanceof sql.ConnectionError){
-	return {
-	  ...response,
-	  error: this.toolbox.makeErrorResponse(500, ErrorCodeMap.auth.internalError, '', `Database error: ${e.message}`)
-	};
+	throw new CustomHttpException(ErrorCodeMap.auth.internalError, '',  `Database error: ${e.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
       }
-      response.error = this.toolbox.makeErrorResponse(500, ErrorCodeMap.auth.internalError, '', `Unknown error: ${e.message}`);
+      if(e instanceof CustomHttpException){
+	throw e;
+      }
+      throw new CustomHttpException(ErrorCodeMap.auth.internalError, '',  `Unknown error: ${e.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     } 
     return response;
   }
@@ -66,18 +65,12 @@ export class AuthService{
       });
       const DBResult = await this.dbController.executeProcedure('sp_get_teacher_session', params)
       if(DBResult.length === 0){
-	return{
-	  ...response,
-	  error: this.toolbox.makeErrorResponse(401, ErrorCodeMap.auth.invalid, '', 'Invalid credentials')
-	}
+	throw new CustomHttpException(ErrorCodeMap.auth.invalid, '', 'Invalid credentials', HttpStatus.UNAUTHORIZED);
       }
       const DBPassword = DBResult?.[0]?.teacher_sessionPassword || '';
       const isPasswordCorrect = await this.encryptionUtil.comparePassword(login_form.password, DBPassword) 
       if(!isPasswordCorrect){
-	return{
-	  ...response,
-	  error: this.toolbox.makeErrorResponse(401, ErrorCodeMap.auth.invalid, '', 'Invalid credentials')
-	}
+	throw new CustomHttpException(ErrorCodeMap.auth.invalid, '', 'Invalid credentials', HttpStatus.UNAUTHORIZED);
       }
       const data = {
 	document_number: login_form.document_number,
@@ -88,12 +81,12 @@ export class AuthService{
       response = await this.authUtilityService.createJWT(data);
     }catch(e){
       if(e instanceof sql.RequestError || e instanceof sql.ConnectionError){
-	return {
-	  ...response,
-	  error:this.toolbox.makeErrorResponse(500, ErrorCodeMap.auth.internalError, '', `Database error: ${e.message}`)
-	}
+	throw new CustomHttpException(ErrorCodeMap.auth.internalError, '',  `Database error: ${e.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
       }
-      response.error = this.toolbox.makeErrorResponse(500, ErrorCodeMap.auth.internalError, '', `Unknown error: ${e.message}`);
+      if(e instanceof CustomHttpException){
+	throw e;
+      }
+      throw new CustomHttpException(ErrorCodeMap.auth.internalError, '',  `Unknown error: ${e.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     return response;
   }
@@ -110,20 +103,17 @@ export class AuthService{
       const params = this.toolbox.jsonToSqlParams(data);
       const DBResult = await this.dbController.executeProcedure('sp_update_teacher_session', params);
       if(DBResult.length === 0){
-	return{
-	  ...response,
-	  error: this.toolbox.makeErrorResponse(401, ErrorCodeMap.auth.logoutError, '', 'Invalid document number')
-	}
+	throw new CustomHttpException(ErrorCodeMap.auth.logoutError, '', 'Invalid document number', HttpStatus.UNAUTHORIZED);	
       }
       response.message = successMessages.logout.replace('@name', DBResult?.[0]?.name || '');
     }catch(e){
       if(e instanceof sql.RequestError || e instanceof sql.ConnectionError){
-	return {
-	  ...response,
-	  error:this.toolbox.makeErrorResponse(500, ErrorCodeMap.auth.internalError, '', `Database error: ${e.message}`)
-	}
+	throw new CustomHttpException(ErrorCodeMap.auth.internalError, '',  `Database error: ${e.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
       }
-      response.error = this.toolbox.makeErrorResponse(500, ErrorCodeMap.auth.internalError, '', `Unknown error: ${e.message}`);
+      if(e instanceof CustomHttpException){
+	throw e;
+      }
+      throw new CustomHttpException(ErrorCodeMap.auth.internalError, '',  `Unknown error: ${e.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     return response;
   }
