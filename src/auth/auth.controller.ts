@@ -1,4 +1,4 @@
-import {  Controller, Post, Body, Query, Res, UseGuards } from "@nestjs/common";
+import {  Controller, Post, Get, Body, Query, Res, UseGuards } from "@nestjs/common";
 import {Response} from "express";
 import { CreateAccountRequestDto } from "./dto/create_account.dto";
 import { LoginRequestDto } from "./dto/login.dto";
@@ -28,5 +28,11 @@ export class AuthController{
   async Logout(@Query('document') document: string, @Res() res: Response){
     const result = await this.authService.logout(document);
     return res.status(HttpStatus.OK).json(result); 
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('verify-session')
+  verifySession(@Res() res: Response){
+    return res.status(HttpStatus.OK).json({ message: 'Session is valid', auth: true });
   }
 }

@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { SqlService } from './common/database/sql.service';
 import { AuthModule } from './auth/auth.module';
 import {JwtModule} from '@nestjs/jwt';
+import { StudentModule } from './student/student.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import {JwtModule} from '@nestjs/jwt';
       signOptions:{expiresIn: '259200s'}
     }),
     AuthModule,
+    StudentModule,
   ],
   controllers: [AppController],
   providers: [AppService, SqlService],
