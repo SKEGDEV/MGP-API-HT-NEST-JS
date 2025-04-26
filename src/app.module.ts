@@ -6,6 +6,7 @@ import { SqlService } from './common/database/sql.service';
 import { AuthModule } from './auth/auth.module';
 import {JwtModule} from '@nestjs/jwt';
 import { StudentModule } from './student/student.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { StudentModule } from './student/student.module';
       secret: process.env.SECRET_KEY,
       signOptions:{expiresIn: '259200s'}
     }),
+    CommonModule,
     AuthModule,
     StudentModule,
   ],

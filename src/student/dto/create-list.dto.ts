@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsInt, IsString, IsDate, IsOptional, IsArray, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 
-class StudentDto{
+export class StudentDto{
 
   @IsString()
   @IsNotEmpty()

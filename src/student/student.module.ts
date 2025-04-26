@@ -1,12 +1,11 @@
 import { Module } from "@nestjs/common";
 import { StudentController } from "./student.controller";
 import { StudentService } from "./student.service";
-import { SqlService } from "src/common/database/sql.service";
-import { Tools } from "src/common/utils/tools.util";
+import { StudentHelperService } from "./services/studentHelper.service";
 
 @Module({
   controllers:[StudentController],
-  providers:[StudentService, SqlService, Tools],
+  providers:[StudentService, StudentHelperService],
   exports:[],
 })
 

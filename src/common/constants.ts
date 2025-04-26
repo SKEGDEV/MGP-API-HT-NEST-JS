@@ -22,10 +22,15 @@ const DefaultHttpError = {
   DEF_001: 'An unknown error ocurred: @data',
 }
 
+const StudentErrorDictionary = {
+  STU_000: 'An error ocurred while creating the student list, students could not be created',
+}
+
 export const ErrorDictionaries = {
   validation: ErrorDictionaryValidation,
   auth: ErrorAuthDictionary,
   default: DefaultHttpError,
+  student: StudentErrorDictionary,
 }
 
 const ErrorCodeMapValidation = {
@@ -97,14 +102,25 @@ const ErrorCodeMapDefault = {
   },
 }
 
+const ErrorCodeMapStudent = {
+  studentListCantCreated:{
+    code: 'STU_000',
+    type: 'student',
+  },
+}
+
 export const ErrorCodeMap = {
   validation: ErrorCodeMapValidation,
   auth: ErrorCodeMapAuth,
   default: ErrorCodeMapDefault,
+  student: ErrorCodeMapStudent,
 }
 
 export const successMessages = {
   login: 'Welcome back! You are logged in successfully @name',
   createdUser: 'Account created successfully! welcome aboard @name',
   logout: 'Goodbye @name! You are logged out successfully',
+  created: 'The @data resource was created successfully',
+  finded: 'The @data resource was found successfully',
+  empty: 'The @data resource was empty please register a new one',
 }
