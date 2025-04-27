@@ -6,11 +6,6 @@ export class ListDto{
   status: string;
 }
 
-export class ListResponseDto{
-  message: string = '';
-  result: (ListDto | ListStudentDto)[] = [];
-}
-
 export class ListStudentDto{
   id: number;
   name: string;

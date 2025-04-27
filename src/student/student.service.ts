@@ -4,7 +4,7 @@ import { Tools } from "src/common/utils/tools.util";
 import * as sql from "mssql";
 import {ErrorCodeMap} from "src/common/constants";
 import { CustomHttpException } from "src/common/exceptions/custom-http.exception";
-import { CreateListRequestDto, ListResponseDto, ListDto } from "./dto";
+import { CreateListRequestDto, ListDto, StudentDto } from "./dto";
 import { GenericResponseDto } from "src/common/dto/generic_response.dto";
 import { StudentHelperService } from "./services/studentHelper.service";
 import { successMessages } from "src/common/constants";
@@ -48,8 +48,8 @@ export class StudentService{
     return response;
   }
 
-  async getAllTeachersList(document_number:string): Promise<ListResponseDto>{
-    const response = new ListResponseDto();
+  async getAllTeachersList(document_number:string): Promise<GenericResponseDto>{
+    const response = new GenericResponseDto<ListDto>();
     try{
       const params = this.toolbox.jsonToSqlParams({
 	document: document_number
@@ -74,9 +74,47 @@ export class StudentService{
     return response;
   }
 
-  async getStudentList(list_id: number): Promise<ListResponseDto>{
-    const response = new ListResponseDto();
+  async getStudentList(list_id: number): Promise<GenericResponseDto>{
+    const response = new GenericResponseDto<StudentDto>();
+    try{
+      const params = this.toolbox.jsonToSqlParams({
+	list_id: list_id,
+      });
+      const DBResult = await this.dbController.executeProcedure('sp_getstudent_list', params);
+      if(DBResult.length === 0){
+	response.message = successMessages.empty.replace('@data', 'student list');
+      }
+      const list: StudentDto[] = plainToInstance(StudentDto, DBResult);
+      response.result = list;
+      response.message = successMessages.finded.replace('@data', 'student list');
+    }catch (e){
+      if(e instanceof sql.RequestError || e instanceof sql.ConnectionError){
+	throw new CustomHttpException(ErrorCodeMap.auth.internalError, '',  `Database error: ${e.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+      if(e instanceof CustomHttpException){
+	throw e;
+      }
+      throw new CustomHttpException(ErrorCodeMap.auth.internalError, '',  `Unknown error: ${e.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    return response;
+  }
 
+  async createStudentOutList(new_student: StudentDto): Promise<GenericResponseDto>{
+    const response = new GenericResponseDto();
+    try{
+      const {student_statusId, ...studentData} = new_student;
+      const params = this.toolbox.jsonToSqlParams(studentData);
+      await this.dbController.executeProcedure('sp_add_student_out_list', params);
+      response.message = successMessages.created.replace('@data', 'student out list');
+    }catch (e){
+      if(e instanceof sql.RequestError || e instanceof sql.ConnectionError){
+	throw new CustomHttpException(ErrorCodeMap.auth.internalError, '',  `Database error: ${e.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+      if(e instanceof CustomHttpException){
+	throw e;
+      }
+      throw new CustomHttpException(ErrorCodeMap.auth.internalError, '',  `Unknown error: ${e.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     return response;
   }
 
