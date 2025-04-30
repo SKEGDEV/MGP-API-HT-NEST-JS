@@ -1,15 +1,14 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, HttpStatus } from "@nestjs/common";
 import {SqlService} from "../common/database/sql.service";
 import {EncryptionUtil} from "../common/utils/encryption.util";
 import {Tools} from "../common/utils/tools.util";
-import {CreateAccountRequestDto, SessionResponseDto} from "./dto/create_account.dto";
-import {LoginRequestDto} from "./dto/login.dto";
+import {CreateAccountRequestDto, SessionResponseDto, LoginRequestDto} from "./dto";
 import * as sql from "mssql";
 import { AuthHelperService } from "./services/authHelper.service";
 import {ErrorCodeMap} from "../common/constants";
 import { successMessages } from "../common/constants";
 import { CustomHttpException } from "src/common/exceptions/custom-http.exception";
-import { HttpStatus } from "@nestjs/common";
+import {HandleErrors} from "src/common/decorators/handle-errors.decorator";
 
 
 @Injectable()
@@ -55,39 +54,30 @@ export class AuthService{
     return response;
   }
 
+  @HandleErrors()
   async login(login_form: LoginRequestDto): Promise<SessionResponseDto>{
     let response = new SessionResponseDto();
-    try{
-      const public_password =  this.authUtilityService.generatePublicPassword(10);
-      const params = this.toolbox.jsonToSqlParams({
-	document_number: login_form.document_number,
-	document_type: login_form.document_type,
-      });
-      const DBResult = await this.dbController.executeProcedure('sp_get_teacher_session', params)
-      if(DBResult.length === 0){
-	throw new CustomHttpException(ErrorCodeMap.auth.invalid, '', 'Invalid credentials', HttpStatus.UNAUTHORIZED);
-      }
-      const DBPassword = DBResult?.[0]?.teacher_sessionPassword || '';
-      const isPasswordCorrect = await this.encryptionUtil.comparePassword(login_form.password, DBPassword) 
-      if(!isPasswordCorrect){
-	throw new CustomHttpException(ErrorCodeMap.auth.invalid, '', 'Invalid credentials', HttpStatus.UNAUTHORIZED);
-      }
-      const data = {
-	document_number: login_form.document_number,
-	public_password: public_password,
-	type_session: 2,
-	teacher_id: 0,
-      }
-      response = await this.authUtilityService.createJWT(data);
-    }catch(e){
-      if(e instanceof sql.RequestError || e instanceof sql.ConnectionError){
-	throw new CustomHttpException(ErrorCodeMap.auth.internalError, '',  `Database error: ${e.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-      if(e instanceof CustomHttpException){
-	throw e;
-      }
-      throw new CustomHttpException(ErrorCodeMap.auth.internalError, '',  `Unknown error: ${e.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    const public_password =  this.authUtilityService.generatePublicPassword(10);
+    const params = this.toolbox.jsonToSqlParams({
+      document_number: login_form.document_number,
+      document_type: login_form.document_type,
+    });
+    const DBResult = await this.dbController.executeProcedure('sp_get_teacher_session', params);
+    if(DBResult.length === 0){
+      throw new CustomHttpException(ErrorCodeMap.auth.invalid, '', 'Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
+    const DBPassword = DBResult?.[0]?.teacher_sessionPassword || '';
+    const isPasswordCorrect = await this.encryptionUtil.comparePassword(login_form.password, DBPassword); 
+    if(!isPasswordCorrect){
+      throw new CustomHttpException(ErrorCodeMap.auth.invalid, '', 'Invalid credentials', HttpStatus.UNAUTHORIZED);
+    }
+    const data = {
+      document_number: login_form.document_number,
+      public_password: public_password,
+      type_session: 2,
+      teacher_id: 0,
+    }
+    response = await this.authUtilityService.createJWT(data);
     return response;
   }
 
