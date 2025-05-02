@@ -1,15 +1,13 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, HttpStatus} from '@nestjs/common';
 import { SqlService } from 'src/common/database/sql.service';
 import * as crypto from 'crypto';
-import * as sql from 'mssql';
 import { Tools } from 'src/common/utils/tools.util';
-import { SessionResponseDto } from '../dto/create_account.dto';
+import { SessionResponseDto } from '../dto';
 import { JwtService } from '@nestjs/jwt';
-import { ErrorCodeMap } from 'src/common/constants';
-import { successMessages } from 'src/common/constants';
+import { ErrorCodeMap, successMessages } from 'src/common/constants';
 import { EncryptionUtil } from 'src/common/utils/encryption.util';
 import { CustomHttpException } from 'src/common/exceptions/custom-http.exception';
-import { HttpStatus } from '@nestjs/common';
+import { HandleErrors } from 'src/common/decorators/handle-errors.decorator';
 
 interface JWTData{
   document_number: string;
@@ -39,58 +37,49 @@ export class AuthHelperService{
     return password;
   }
 
+  @HandleErrors()
   async userExists(document_number: string, document_type: number): Promise<boolean>{
     let result: boolean = false;
-    try{
-      const params = this.toolbox.jsonToSqlParams({
-	document_number: document_number,
-	document_type: document_type
-      });
 
-      const DBResult = await this.dbController.executeProcedure('sp_get_teacher_session', params);
+    const params = this.toolbox.jsonToSqlParams({
+      document_number: document_number,
+      document_type: document_type
+    });
 
-      if(DBResult.length === 0){
-	result = false;
-      }else{
-	result = true;
-      }
+    const DBResult = await this.dbController.executeProcedure('sp_get_teacher_session', params);
 
-    }catch(e){
-      throw e;
+    if(DBResult.length === 0){
+      result = false;
+    }else{
+      result = true;
     }
+
     return result;
   }
 
+  @HandleErrors()
   async createJWT(data: JWTData): Promise<SessionResponseDto>{ 
     const response = new SessionResponseDto();
-    try{
-      const params = this.toolbox.jsonToSqlParams(data);
-      const dbResult = await this.dbController.executeProcedure('sp_update_teacher_session', params);
-      if(dbResult.length === 0){
-	throw new CustomHttpException(ErrorCodeMap.auth.sessionError, '', 'Database error: Session not found', HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-      const encriptedPublicPassword = await this.encryptionUtil.hashPassword(data.public_password);
-      const tokenPayload = {
-	document_number: dbResult?.[0]?.document,
-	session_id: dbResult?.[0]?.session_uid,
-	public_password: encriptedPublicPassword,
-      }
-      const Token = await this.jwtHelper.signAsync(tokenPayload)
-      response.token = Token;
-      response.name = dbResult?.[0]?.name || '';
-      response.document_number = dbResult?.[0]?.document || '';
-      response.message = data.type_session === 1 ?
-	                          successMessages.createdUser.replace('@name', response.name) :
-				  successMessages.login.replace('@name', response.name);
-    }catch(e){
-      if(e instanceof sql.RequestError || e instanceof sql.ConnectionError){
-	throw new CustomHttpException(ErrorCodeMap.auth.internalError, '', `Database error: ${e.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-      if(e instanceof CustomHttpException){
-	throw e;
-      }
-      throw new CustomHttpException(ErrorCodeMap.auth.internalError, '', `Unknown error: ${e.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
-    } 
+
+    const params = this.toolbox.jsonToSqlParams(data);
+    const dbResult = await this.dbController.executeProcedure('sp_update_teacher_session', params);
+    if(dbResult.length === 0){
+      throw new CustomHttpException(ErrorCodeMap.auth.sessionError, '', 'Database error: Session not found', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    const encriptedPublicPassword = await this.encryptionUtil.hashPassword(data.public_password);
+    const tokenPayload = {
+      document_number: dbResult?.[0]?.document,
+      session_id: dbResult?.[0]?.session_uid,
+      public_password: encriptedPublicPassword,
+    }
+    const Token = await this.jwtHelper.signAsync(tokenPayload)
+    response.token = Token;
+    response.name = dbResult?.[0]?.name || '';
+    response.document_number = dbResult?.[0]?.document || '';
+    response.message = data.type_session === 1 ?
+      successMessages.createdUser.replace('@name', response.name) :
+      successMessages.login.replace('@name', response.name);
+ 
     return response;
   }
 

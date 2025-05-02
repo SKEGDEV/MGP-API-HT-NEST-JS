@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { EncryptionUtil } from "../utils/encryption.util";
 import * as sql from "mssql";
+import { HandleErrors } from "../decorators/handle-errors.decorator";
 
 @Injectable()
 export class SqlService{
@@ -20,22 +21,31 @@ export class SqlService{
     return this.pool;
   }
 
+ @HandleErrors()
  async executeProcedure<T = any>(
     procedureName: string,
-    params: { name: string; type: sql.ISqlTypeFactory; value: any }[]
+    params: { name: string; type: sql.ISqlTypeFactory; value: any }[],
+    isMultiple: boolean = false
   ): Promise<T[]> {
-    try{
-      const pool = await this.connect();
-      const request = pool.request();
 
-      for (const param of params) {
-	request.input(param.name, param.type, param.value);
-      }
+    const pool = await this.connect();
+    const request = pool.request();
 
-      const result = await request.execute<T>(procedureName);
-      return result.recordset;
-    }catch(e){
-      throw e;
+    for (const param of params) {
+      request.input(param.name, param.type, param.value);
     }
+
+    const result = await request.execute<T>(procedureName);
+    return isMultiple? result.recordsets : result.recordset;
   }
+
+  @HandleErrors()
+  async executeProcedureWithTVP(spName: string, tvpName: string, table: sql.Table): Promise<void> {
+    const request = new sql.Request();
+    request.input(tvpName, table);
+    const result = await request.execute(spName);
+    return result.recordset || [];
+  }
+
+
 }

@@ -9,8 +9,28 @@ export interface ErrorParameter{
   type: string;
 }
 
+type SqlColumnDefinition = {
+  name: string;
+  type: sql.ISqlType;
+  nullable?: boolean;
+};
+
 @Injectable()
 export class Tools{
+
+  arrayToSqlTable(data: any[], columns: SqlColumnDefinition[]): sql.Table {
+    const table = new sql.Table();
+    for (const col of columns) {
+      table.columns.add(col.name, col.type, { nullable: col.nullable ?? true });
+    }
+
+    for (const row of data) {
+      const rowData = columns.map(col => row[col.name]);
+      table.rows.add(...rowData);
+    }
+
+    return table;
+  }
 
   jsonToSqlParams(json: Record<string, any>): sql.SqlParameter[]{
     return Object.entries(json).map(([key, value])=>{

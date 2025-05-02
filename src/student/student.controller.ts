@@ -2,7 +2,7 @@ import {  Post, Get, Put, Query, Res, UseGuards, Controller, Body } from "@nestj
 import { AuthGuard } from "src/auth/auth.guard";
 import { HttpStatus } from "@nestjs/common";
 import { StudentService } from "./student.service";
-import { CreateListRequestDto } from "./dto";
+import { CreateListRequestDto, StudentUpdateDto } from "./dto";
 import { Response } from "express";
 
 @Controller('student')
@@ -42,6 +42,13 @@ export class StudentController{
     @Query('documentid') documentid: string,
     @Res() res: Response){
     const result = await this.studentService.getStudent2Update(studentid, documentid);
+    res.status(HttpStatus.OK).json(result);
+  }
+
+  @UseGuards(AuthGuard)
+  @Put('update-student')
+  async updateStudent(@Body() student: StudentUpdateDto, @Res() res: Response){
+    const result = await this.studentService.updateStudent(student);
     res.status(HttpStatus.OK).json(result);
   }
 

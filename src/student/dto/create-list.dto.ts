@@ -63,3 +63,38 @@ export class CreateListRequestDto{
   @Type(() => StudentDto)
   students: StudentDto[];
 }
+
+export class StudentUpdateDto{
+  @IsInt()
+  @IsNotEmpty()
+  s_id: number;
+
+  @IsString()
+  @IsNotEmpty()
+  first_name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  last_name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  s_code: string;
+
+  @Type(() => Date)
+  @IsDate()
+  @IsNotEmpty()
+  birthday: Date;
+
+  @IsString()
+  @IsOptional()
+  mother_number: string;
+
+  @IsString()
+  @IsOptional()
+  father_number: string;
+
+  @IsString()
+  @IsOptional()
+  phone_number: string;
+}

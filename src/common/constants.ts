@@ -15,6 +15,7 @@ const ErrorAuthDictionary  = {
   AUTH_005: 'An error ocurred while creating the session token on database',
   AUTH_006: 'The session token is invalid or expired',
   AUTH_007: 'An unexpected error ocurred while validating token',
+  AUTH_008: 'An error ocurred while creating account on database',
 }
 
 const DefaultHttpError = {
@@ -88,7 +89,11 @@ const ErrorCodeMapAuth = {
   errorValidatingToken:{
     code: 'AUTH_007',
     type: 'auth',
-  }
+  },
+  uncreatedAccount:{
+    code: 'AUTH_008',
+    type: 'auth',
+  },
 }
 
 const ErrorCodeMapDefault = {
@@ -123,4 +128,11 @@ export const successMessages = {
   created: 'The @data resource was created successfully',
   finded: 'The @data resource was found successfully',
   empty: 'The @data resource was empty please register a new one',
+  updated: 'The @data resource was updated successfully',
+}
+
+export const sessionTypes = {
+  createAccount: 1,
+  login: 2,
+  logout: 3,
 }
