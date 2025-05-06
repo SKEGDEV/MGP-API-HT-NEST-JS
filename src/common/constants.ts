@@ -27,11 +27,17 @@ const StudentErrorDictionary = {
   STU_000: 'An error ocurred while creating the student list, students could not be created',
 }
 
+const classroomErrorDictionary = {
+  CLS_000: 'An error ocurred while creating the classroom',
+  CLS_001: 'You trying add a list of students to a classroom that is already added',
+}
+
 export const ErrorDictionaries = {
   validation: ErrorDictionaryValidation,
   auth: ErrorAuthDictionary,
   default: DefaultHttpError,
   student: StudentErrorDictionary,
+  classroom: classroomErrorDictionary,
 }
 
 const ErrorCodeMapValidation = {
@@ -114,11 +120,23 @@ const ErrorCodeMapStudent = {
   },
 }
 
+const ErrorCodeMapClassroom = {
+  classroomCantCreated:{
+    code: 'CLS_000',
+    type: 'classroom',
+  },
+  classroomAlreadyAdded:{
+    code: 'CLS_001',
+    type: 'classroom',
+  },
+}
+
 export const ErrorCodeMap = {
   validation: ErrorCodeMapValidation,
   auth: ErrorCodeMapAuth,
   default: ErrorCodeMapDefault,
   student: ErrorCodeMapStudent,
+  classroom: ErrorCodeMapClassroom,
 }
 
 export const successMessages = {

@@ -26,7 +26,7 @@ export class SqlService{
     procedureName: string,
     params: { name: string; type: sql.ISqlTypeFactory; value: any }[],
     isMultiple: boolean = false
-  ): Promise<T[]> {
+  ): Promise<T[] | T[][]>{
 
     const pool = await this.connect();
     const request = pool.request();

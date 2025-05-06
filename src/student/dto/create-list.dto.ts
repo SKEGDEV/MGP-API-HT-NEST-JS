@@ -97,4 +97,8 @@ export class StudentUpdateDto{
   @IsString()
   @IsOptional()
   phone_number: string;
+
+  @IsString()
+  @IsNotEmpty()
+  doc_number: string;
 }

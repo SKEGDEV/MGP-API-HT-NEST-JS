@@ -11,8 +11,6 @@ import {
   StudentUpdateDto,
   StudentFileResponseDto,
   StudentInfoDto,
-  ClassroomInfoDto,
-  StudentActivitiesInfoDto,
 } from "./dto";
 import { GenericResponseDto } from "src/common/dto/generic_response.dto";
 import { StudentHelperService } from "./services/studentHelper.service";
@@ -128,7 +126,7 @@ export class StudentService{
   async updateStudent(student: StudentUpdateDto): Promise<GenericResponseDto>{
     const response = new GenericResponseDto();
     const params = this.toolbox.jsonToSqlParams(student);
-    await this.dbController.executeProcedure('', params);
+    await this.dbController.executeProcedure('sp_update_student', params);
     response.message = successMessages.updated.replace('@data', 'student');
     return response;
   }
@@ -140,11 +138,12 @@ export class StudentService{
       s_id: studentID,
       document_id: documentID,
     });
-    const DBResult = await this.dbController.executeProcedure('sp_get_student_file', params, true);
+    const DBResult = await this.dbController.executeProcedure('sp_get_student_file', params, true); 
     if(DBResult.length === 0){
       response.message = successMessages.empty.replace('@data', 'student file');
       return response;
-    }
+    } 
+    console.log(DBResult);
     return response;
   }
 }

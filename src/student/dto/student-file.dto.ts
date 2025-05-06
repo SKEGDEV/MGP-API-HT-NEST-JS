@@ -1,9 +1,13 @@
+import { Type } from "class-transformer";
 
 export class StudentFileResponseDto{
   message: string = "";
   excecution_date: Date = new Date();
+  @Type(() => StudentInfoDto)
   student: StudentInfoDto[] = [];
+  @Type(() => ClassroomInfoDto)
   classroom: ClassroomInfoDto[] = [];
+  @Type(() => StudentActivitiesInfoDto)
   activities: StudentActivitiesInfoDto[] = [];
 
 }

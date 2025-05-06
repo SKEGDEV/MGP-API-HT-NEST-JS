@@ -1,6 +1,15 @@
-import {  Post, Get, Put, Query, Res, UseGuards, Controller, Body } from "@nestjs/common";
+import {  
+  Post,
+  Get,
+  Put,
+  Query,
+  Res,
+  UseGuards,
+  Controller,
+  Body,
+  HttpStatus,
+} from "@nestjs/common";
 import { AuthGuard } from "src/auth/auth.guard";
-import { HttpStatus } from "@nestjs/common";
 import { StudentService } from "./student.service";
 import { CreateListRequestDto, StudentUpdateDto } from "./dto";
 import { Response } from "express";
