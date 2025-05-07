@@ -29,7 +29,8 @@ const StudentErrorDictionary = {
 
 const classroomErrorDictionary = {
   CLS_000: 'An error ocurred while creating the classroom',
-  CLS_001: 'You trying add a list of students to a classroom that is already added',
+  CLS_001: 'You trying import a list which is already added to the classroom',
+  CLS_002: 'An error ocurred while importing the list into the classroom',
 }
 
 export const ErrorDictionaries = {
@@ -127,6 +128,10 @@ const ErrorCodeMapClassroom = {
   },
   classroomAlreadyAdded:{
     code: 'CLS_001',
+    type: 'classroom',
+  },
+  classroomCantImported:{
+    code: 'CLS_002',
     type: 'classroom',
   },
 }

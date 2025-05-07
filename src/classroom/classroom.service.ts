@@ -6,7 +6,7 @@ import { CustomHttpException } from "src/common/exceptions/custom-http.exception
 import { GenericResponseDto } from "src/common/dto/generic_response.dto";
 import { plainToInstance } from "class-transformer";
 import { HandleErrors } from "src/common/decorators/handle-errors.decorator";
-import { requestCreateClassroomDto, newCreatedClassroomDto } from "./dto";
+import { requestCreateClassroomDto, newCreatedClassroomDto, requestListToClassroomDto } from "./dto";
 
 
 @Injectable()
@@ -31,9 +31,28 @@ export class ClassroomService{
   }
 
   @HandleErrors()
-  async isListToClassroomAvailable(): Promise<Boolean>{
-
+  async importListIntoClassroom(importedList: requestListToClassroomDto): Promise<GenericResponseDto>{
+    const response = new GenericResponseDto();
+    const params = this.toolbox.jsonToSqlParams(importedList);
+    const DBResult = await this.dbController.executeProcedure('sp_list_2_classroom', params);
+    if(DBResult.length === 0){
+      throw new CustomHttpException(
+	ErrorCodeMap.classroom.classroomCantImported,
+	'',
+	'List cant imported to classroom database dont returned nothing',
+	HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    const result = DBResult?.[0]?.result;
+    if(result !== 0){
+      throw new CustomHttpException(
+	ErrorCodeMap.classroom.classroomAlreadyAdded,
+	'',
+	'List already added to classroom',
+	HttpStatus.CONFLICT
+      );
+    }
+    response.message = successMessages.created.replace('@data', 'list to classroom');
+    return response;
   }
-   
 
 }
