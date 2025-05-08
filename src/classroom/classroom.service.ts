@@ -6,7 +6,15 @@ import { CustomHttpException } from "src/common/exceptions/custom-http.exception
 import { GenericResponseDto } from "src/common/dto/generic_response.dto";
 import { plainToInstance } from "class-transformer";
 import { HandleErrors } from "src/common/decorators/handle-errors.decorator";
-import { requestCreateClassroomDto, newCreatedClassroomDto, requestListToClassroomDto } from "./dto";
+import { 
+  requestCreateClassroomDto,
+  newCreatedClassroomDto,
+  requestListToClassroomDto,
+  responseClassroomDto,
+  responseClassroomYearDto,
+  responseClassroomStudentDto,
+  responseClassroomListDto,
+} from "./dto";
 
 
 @Injectable()
@@ -52,6 +60,75 @@ export class ClassroomService{
       );
     }
     response.message = successMessages.created.replace('@data', 'list to classroom');
+    return response;
+  }
+
+  @HandleErrors()
+  async getAllClassroom(
+    documentId:string,
+    year:number,
+    variant:number): Promise<GenericResponseDto>{
+    const params = this.toolbox.jsonToSqlParams({
+      document_number: documentId,
+      in_year: year,
+      variant: variant,
+    });
+    const DBResult = await this.dbController.executeProcedure('sp_get_all_classroom', params);
+    if(DBResult.length === 0){
+      const response = new GenericResponseDto();
+      response.message = successMessages.empty.replace('@data', variant === 1? 'classroom':'classroom year');
+      return response;
+    }
+    if(variant === 1){
+      const response = new GenericResponseDto<responseClassroomDto>();
+      response.result = plainToInstance(responseClassroomDto, DBResult);
+      response.message = successMessages.finded.replace('@data', 'classroom');
+      return response;
+    }
+    const response = new GenericResponseDto<responseClassroomYearDto>();
+    response.result = plainToInstance(responseClassroomYearDto, DBResult);
+    response.message = successMessages.finded.replace('@data', 'classroom year');
+    return response;
+  }
+
+  @HandleErrors()
+  async getAllClassroomStudent(
+    classroomId: number,
+    unitNumber: number,
+    documentId: string): Promise<GenericResponseDto>{
+    const response = new GenericResponseDto<responseClassroomStudentDto>();
+    const params = this.toolbox.jsonToSqlParams({
+      Clist_id: classroomId,
+      unitNumber: unitNumber,
+      document_number: documentId,
+    });
+    const DBResult = await this.dbController.executeProcedure('sp_get_classroom_student', params);
+    if(DBResult.length === 0){
+      response.message = successMessages.empty.replace('@data', 'classroom students');
+      return response;
+    }
+    response.result = plainToInstance(responseClassroomStudentDto, DBResult);
+    response.message = successMessages.finded.replace('@data', 'classroom students');
+    return response;
+  }
+
+  @HandleErrors()
+  async getAllClassroomList(
+    classroomId: number,
+    documentId:string
+  ): Promise<GenericResponseDto>{
+    const response = new GenericResponseDto<responseClassroomListDto>();
+    const params = this.toolbox.jsonToSqlParams({
+      classroom_id: classroomId,
+      document_number: documentId,
+    });
+    const DBResult = await this.dbController.executeProcedure('sp_get_clist', params);
+    if(DBResult.length === 0){
+      response.message = successMessages.empty.replace('@data', 'classroom list');
+      return response;
+    }
+    response.result = plainToInstance(responseClassroomListDto, DBResult);
+    response.message = successMessages.finded.replace('@data', 'classroom list');
     return response;
   }
 
