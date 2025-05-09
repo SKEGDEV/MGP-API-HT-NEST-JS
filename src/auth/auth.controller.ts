@@ -5,8 +5,11 @@ import { LoginRequestDto } from "./dto/login.dto";
 import { AuthService } from "./auth.service";
 import { HttpStatus } from "@nestjs/common";
 import { AuthGuard } from "./auth.guard";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 
+@ApiTags('auth')
+@ApiBearerAuth('access-token')
 @Controller('auth')
 export class AuthController{
   constructor(private readonly authService: AuthService) {}
