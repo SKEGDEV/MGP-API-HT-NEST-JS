@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import {JwtModule} from '@nestjs/jwt';
 import { StudentModule } from './student/student.module';
 import { CommonModule } from './common/common.module';
+import { ClassroomModule } from './classroom/classroom.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { CommonModule } from './common/common.module';
     CommonModule,
     AuthModule,
     StudentModule,
+    ClassroomModule,
   ],
   controllers: [AppController],
   providers: [AppService, SqlService],

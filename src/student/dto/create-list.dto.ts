@@ -74,7 +74,7 @@ export class CreateListRequestDto{
   @IsNotEmpty()
   document_number: string;
 
-  @ApiProperty(mapperPropertiesStudent.studentList)
+  @ApiProperty({ type: StudentDto, ...mapperPropertiesStudent.studentList})
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => StudentDto)

@@ -33,12 +33,17 @@ const classroomErrorDictionary = {
   CLS_002: 'An error ocurred while importing the list into the classroom',
 }
 
+const activityErrorDictionary = {
+  ACT_000: 'You trying evaluate an activity which classroom not exists',
+}
+
 export const ErrorDictionaries = {
   validation: ErrorDictionaryValidation,
   auth: ErrorAuthDictionary,
   default: DefaultHttpError,
   student: StudentErrorDictionary,
   classroom: classroomErrorDictionary,
+  activity: activityErrorDictionary,
 }
 
 const ErrorCodeMapValidation = {
@@ -136,12 +141,20 @@ const ErrorCodeMapClassroom = {
   },
 }
 
+const ErrorCodeMapActivity = {
+  activityUnavailable:{
+    code: 'ACT_000',
+    type: 'activity',
+  },
+}
+
 export const ErrorCodeMap = {
   validation: ErrorCodeMapValidation,
   auth: ErrorCodeMapAuth,
   default: ErrorCodeMapDefault,
   student: ErrorCodeMapStudent,
   classroom: ErrorCodeMapClassroom,
+  activity: ErrorCodeMapActivity,
 }
 
 export const successMessages = {
