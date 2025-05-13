@@ -9,7 +9,7 @@ import { Type } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
 import { mapperPropertiesActivity } from "./property-mapper.dictionary";
 
-class QualifyingDto{
+export class QualifyingDto{
   @ApiProperty(mapperPropertiesActivity.studentQualification)
   @IsNumber()
   @IsNotEmpty()
@@ -32,7 +32,7 @@ class QualifyingDto{
   
 }
 
-class qualificationDto{
+export class qualificationDto{
 
   @ApiProperty(mapperPropertiesActivity.qualficationType)
   @IsInt()

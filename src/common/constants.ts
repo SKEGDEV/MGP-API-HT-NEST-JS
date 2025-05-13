@@ -35,6 +35,9 @@ const classroomErrorDictionary = {
 
 const activityErrorDictionary = {
   ACT_000: 'You trying evaluate an activity which classroom not exists',
+  ACT_001: 'You trying get information of an student which activity not exists',
+  ACT_002: 'The activity qualification is higher than the classroom qualification available',
+  ACT_003: 'Some qualification is not valid or exceeded the limit, please check the values',
 }
 
 export const ErrorDictionaries = {
@@ -144,6 +147,18 @@ const ErrorCodeMapClassroom = {
 const ErrorCodeMapActivity = {
   activityUnavailable:{
     code: 'ACT_000',
+    type: 'activity',
+  },
+  activityStudentNotExists:{
+    code: 'ACT_001',
+    type: 'activity',
+  },
+  activityExcededQualification:{
+    code: 'ACT_002',
+    type: 'activity',
+  },
+  activityInvalidQualification:{
+    code: 'ACT_003',
     type: 'activity',
   },
 }
