@@ -76,7 +76,7 @@ export class ActivityHelperSeervice{
     if(totalToQualify > activityQualification && activityInfo.typeId === 1){
       return false;
     }
-    if(totalToQualify < activityQualification && activityInfo.typeId === 2){
+    if(studentCurrentQualification < studentQualification && activityInfo.typeId === 2){
       return false;
     }
     return true;

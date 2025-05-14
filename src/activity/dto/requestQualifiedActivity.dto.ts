@@ -46,7 +46,7 @@ export class qualificationDto{
 }
 
 export class requestQualficateActivityDto{
-  @Type(() => QualifyingDto)
+  @Type(() => qualificationDto)
   @ValidateNested()
   qualfication: qualificationDto;
 

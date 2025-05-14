@@ -8,6 +8,7 @@ import {JwtModule} from '@nestjs/jwt';
 import { StudentModule } from './student/student.module';
 import { CommonModule } from './common/common.module';
 import { ClassroomModule } from './classroom/classroom.module';
+import { ActivityModule } from './activity/activity.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ClassroomModule } from './classroom/classroom.module';
     AuthModule,
     StudentModule,
     ClassroomModule,
+    ActivityModule,
   ],
   controllers: [AppController],
   providers: [AppService, SqlService],
