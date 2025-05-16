@@ -2,7 +2,11 @@ import { Injectable, HttpStatus } from "@nestjs/common";
 import {SqlService} from "../common/database/sql.service";
 import {EncryptionUtil} from "../common/utils/encryption.util";
 import {Tools} from "../common/utils/tools.util";
-import {CreateAccountRequestDto, SessionResponseDto, LoginRequestDto} from "./dto";
+import {
+  CreateAccountRequestDto,
+  SessionResponseDto,
+  LoginRequestDto,
+  responseCatalogsDto,} from "./dto";
 import { AuthHelperService } from "./services/authHelper.service";
 import { successMessages, sessionTypes, ErrorCodeMap } from "../common/constants";
 import { CustomHttpException } from "src/common/exceptions/custom-http.exception";
@@ -17,6 +21,22 @@ export class AuthService{
     private readonly encryptionUtil: EncryptionUtil,
     private readonly toolbox: Tools,
   ) {}
+
+
+  @HandleErrors()
+  async getCatalogs(): Promise<responseCatalogsDto>{
+    const response = new responseCatalogsDto();
+    const DBResult = await this.dbController.executeProcedure('sp_get_catalogs', [], true);
+    response.region = DBResult?.[0];
+    response.document = DBResult?.[1];
+    response.classroom = DBResult?.[2];
+    response.activityTypes = DBResult?.[3];
+    response.activitySubTypes = DBResult?.[4];
+    response.grade = DBResult?.[5];
+    response.section = DBResult?.[6];
+    response.level = DBResult?.[7];
+    return response;
+  }
 
   @HandleErrors()
   async createAccount(new_user: CreateAccountRequestDto): Promise<SessionResponseDto>{

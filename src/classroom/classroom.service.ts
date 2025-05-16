@@ -132,4 +132,21 @@ export class ClassroomService{
     return response;
   }
 
+  @HandleErrors()
+  async getClassroomCatalog(classroomListId: number, documentId: string): Promise<GenericResponseDto>{
+    const response = new GenericResponseDto<responseClassroomListDto>();
+    const params = this.toolbox.jsonToSqlParams({
+      classroom_list_id: classroomListId,
+      document_number: documentId,
+    });
+    const DBResult = await this.dbController.executeProcedure('get_catalog_classroom', params);
+    if(DBResult.length === 0){
+      response.message = successMessages.empty.replace('@data', 'classroom list catalog');
+      return response;
+    }
+    response.result = plainToInstance(responseClassroomListDto, DBResult);
+    response.message = successMessages.finded.replace('@data', 'classroom list catalog')
+    return response;
+  }
+
 }

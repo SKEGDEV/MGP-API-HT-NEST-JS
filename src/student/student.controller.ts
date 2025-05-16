@@ -54,6 +54,16 @@ export class StudentController{
     res.status(HttpStatus.OK).json(result);
   }
 
+  @Get('get-student-file')
+  async getStudentFile(
+    @Query('studentid') studentid: number,
+    @Query('documentid') documentid: string,
+    @Res() res: Response
+  ){
+    const result = await this.studentService.getStudentFile(studentid, documentid);
+    res.status(HttpStatus.OK).json(result);
+  }
+
   @Put('update-student')
   async updateStudent(@Body() student: StudentUpdateDto, @Res() res: Response){
     const result = await this.studentService.updateStudent(student);

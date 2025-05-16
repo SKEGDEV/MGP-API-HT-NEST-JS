@@ -132,18 +132,21 @@ export class StudentService{
   }
 
   @HandleErrors()
-  async gestStudentFile(studentID: number, documentID: string): Promise<StudentFileResponseDto>{
+  async getStudentFile(studentID: number, documentID: string): Promise<StudentFileResponseDto>{
     const response = new StudentFileResponseDto();
     const params = this.toolbox.jsonToSqlParams({
       s_id: studentID,
-      document_id: documentID,
+      document_number: documentID,
     });
     const DBResult = await this.dbController.executeProcedure('sp_get_student_file', params, true); 
     if(DBResult.length === 0){
       response.message = successMessages.empty.replace('@data', 'student file');
       return response;
     } 
-    console.log(DBResult);
+    response.message = successMessages.finded.replace('@data', 'student file');
+    response.student = plainToInstance(StudentInfoDto, DBResult[0]);
+    response.classroom = plainToInstance(StudentInfoDto, DBResult[1]);
+    response.activities = plainToInstance(StudentInfoDto, DBResult[2]);
     return response;
   }
 }

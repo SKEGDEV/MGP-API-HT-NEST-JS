@@ -78,6 +78,17 @@ export class ClassroomController{
     res.status(HttpStatus.OK).json(result);
   }
 
+  @Get('get-classroom-list-catalog')
+  async getClassroomListCatalog(
+    @Query('classroomlistid') classroomlistid: number,
+    @Query('documentid') documentid: string,
+    @Res() res: Response
+  ){
+    const result = await this.classroomService.getClassroomCatalog(classroomlistid, documentid);
+    res.status(HttpStatus.OK).json(result)
+  }
+
+
 }
 
 

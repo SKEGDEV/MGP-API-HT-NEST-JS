@@ -24,3 +24,4 @@ export class responseClassroomListDto{
   id: number;
   name: string;
 }
+

@@ -4,11 +4,11 @@ export class StudentFileResponseDto{
   message: string = "";
   excecution_date: Date = new Date();
   @Type(() => StudentInfoDto)
-  student: StudentInfoDto[] = [];
+  student: any = [];
   @Type(() => ClassroomInfoDto)
-  classroom: ClassroomInfoDto[] = [];
+  classroom: any = [];
   @Type(() => StudentActivitiesInfoDto)
-  activities: StudentActivitiesInfoDto[] = [];
+  activities: any = [];
 
 }
 

@@ -26,6 +26,12 @@ export class AuthController{
     return res.status(HttpStatus.OK).json(result);  
   }
 
+  @Get('get-catalogs')
+  async getCatalogs(@Res() res: Response){
+    const result = await this.authService.getCatalogs();
+    res.status(HttpStatus.OK).json(result);
+  }
+
   @UseGuards(AuthGuard)
   @Post('logout')
   async Logout(@Query('document') document: string, @Res() res: Response){
