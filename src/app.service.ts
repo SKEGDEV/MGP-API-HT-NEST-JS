@@ -13,6 +13,6 @@ export class AppService {
     const ht_db = await this.encryptionUtil.getKey('ht_db');
       
     
-    return  await this.encryptionUtil.decrypt(ht_db);
+    return  'Hello World!';//await this.encryptionUtil.decrypt(ht_db);
   }
 }
