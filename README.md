@@ -37,7 +37,7 @@ A robust backend API built with **NestJS** and **TypeScript**, designed to suppo
 ### 1. Clone the repo
 ```bash
 git clone https://github.com/SKEGDEV/MGP-API-HT-NEST-JS.git
-cd teacher-management-api
+cd MGP-API-HT-NEST-JS
 ```
 ### 2. Install dependencies
 ```bash
