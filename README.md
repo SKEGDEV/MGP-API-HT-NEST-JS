@@ -38,7 +38,7 @@ A robust backend API built with **NestJS** and **TypeScript**, designed to suppo
 ```bash
 git clone https://github.com/your-username/teacher-management-api.git
 cd teacher-management-api
-
+```
 ### 2. Install dependencies
 ```bash
 # Using pnpm
@@ -49,14 +49,14 @@ npm install
 
 # or using yarn
 yarn install
-
+```
 ### 3. Configure Environment Variables 
 ```bash
 DB_KEY=YourDatabaseKeyFromWindowsRegistry
 PORT=3000
 REPORT_API_URL=https://your-report-service-url
 SECRET_KEY=YourSecretKeyForJWT
-
+```
 ### 4. Run the application 
 ```bash
 # Using pnpm
@@ -67,7 +67,7 @@ npm run start:dev
 
 # or using yarn
 yarn start:dev
-
+```
 
 ### 5. Run test (optional)
 ```bash
@@ -76,9 +76,9 @@ pnpm test
 npm run test
 # or
 yarn test
-
+```
 
 ### 6. Explore 
 ```bash
 http://localhost:3000/api#/
-
+```
